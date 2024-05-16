@@ -19,7 +19,7 @@ function show_block ( $module_sub )
     }
 
     // Список конкурсов.
-    // TODO: В идеале сделать отдельным модулем.
+    // TODO: В идеале сделать конкурсы отдельным модулем, но пока так.
     $competition_list = array(
         0 => 'Путешествие в страну творчества Лео'
     );
@@ -35,41 +35,41 @@ function show_block ( $module_sub )
                             name VARCHAR(50),
                             email VARCHAR(50),
                             city VARCHAR(50),
-                            phone_number INT(11),
+                            phone_number VARCHAR(11),
                             shop_address VARCHAR(100),
-                            has_accept TINYINT(1),
+                            has_accept BOOLEAN,
                             id_competition INT(11),
                             date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                            date_accept TIMESTAMP
+                            date_accept TIMESTAMP,
+                            reject_reason TEXT
                           )"
         );
         if ($create_table_query !== TRUE) {
             die("<div id=\"status1\"><b>Ошибка при создании таблицы: " . ($DB -> ErrNo()) ."</b></div>");
         }
     }
+    
 
-    $DB -> Query("UPDATE ". PREFIX . "_competitive_works SET has_accept = NULL");
-    // $DB -> Query(
-    //     "
-    //         INSERT INTO ".PREFIX."_competitive_works (surname, name, email, city, phone_number, shop_address, has_accept, id_competition, date_created)
-    //         VALUES ('Иванов', 'Иван', 'ivanov@example.com', 'Москва', '79008007060', 'ул. Пушкина, д.10', NULL, 0, NOW())
-    //     "
-    // );
+    // Удаляем временные файлы, загруженный больше 24 часов назад
+    $temp_images = CONF_ROOT . "/uploads/competitive_works/tmp/";
+    $temp_images = array_diff(scandir($temp_images), ['.', '..']);
+    foreach ($temp_images as $image) {
+        if ( strpos( $image, '.jpg' ) !== FALSE ) {
+            $timestamp = substr($image, 0, strpos($image, '_'));
 
-    // $DB -> Query(
-    //     "
-    //         INSERT INTO ".PREFIX."_competitive_works (surname, name, email, city, phone_number, shop_address, has_accept, id_competition, date_created)
-    //         VALUES ('Антонов', 'Антон', 'antonov@example.com', 'Воркута', '79008007061', 'ул. Пушкина, д.10', null, 0, NOW())
-    //     "
-    // );
+            if ($timestamp < time() - 24 * 60 * 60) {
+                unlink( CONF_ROOT . "/uploads/competitive_works/tmp/" . $image );
+            }
+        }
+    }
 
-    // $DB -> Query(
-    //     "
-    //         INSERT INTO ".PREFIX."_competitive_works (surname, name, email, city, phone_number, shop_address, has_accept, id_competition, date_created, date_accept)
-    //         VALUES ('Александрова', 'Саша', 'alexandrova@example.com', 'Краснодар', '79008007062', 'ул. Пушкина, д.10', 1, 0, NOW(), NOW())
-    //     "
-    // );
-
+    // Код чисто для разработки
+    if (isset($_GET['dev'])) {
+        // array_map('unlink', glob(CONF_ROOT . "/uploads/competitive_works/0_21_1715855894/*.*"));
+        // rmdir(CONF_ROOT . '/uploads/competitive_works/0_21_1715855894');
+        // $DB -> Query("DELETE FROM ". PREFIX . "_competitive_works WHERE id_competitive_work <> 13");
+    }
+    
 	if( isset( $_GET["id"] ) ) $id = $_GET["id"];
     else $id = NULL;
 
@@ -249,6 +249,7 @@ div.success {
         $competition_name = '';
         if (isset($competition_list[$item[8]])) $competition_name = $competition_list[$item[8]];
 
+        // Примеры названия файлов
         // /uploads/competitive_works/0_12_7874947784/img_1.jpg
         // /uploads/competitive_works/0_12_7874947784/additional_img_1.jpg
 ?>

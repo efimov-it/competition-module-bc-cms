@@ -65,9 +65,9 @@ function show_block ( $module_sub )
 
     // Код чисто для разработки
     if (isset($_GET['dev'])) {
-        // array_map('unlink', glob(CONF_ROOT . "/uploads/competitive_works/0_21_1715855894/*.*"));
-        // rmdir(CONF_ROOT . '/uploads/competitive_works/0_21_1715855894');
-        // $DB -> Query("DELETE FROM ". PREFIX . "_competitive_works WHERE id_competitive_work <> 13");
+        // array_map('unlink', glob(CONF_ROOT . "/uploads/competitive_works/0_24_1715957078/*.*"));
+        // rmdir(CONF_ROOT . '/uploads/competitive_works/0_24_1715957078');
+        // $DB -> Query("DELETE FROM ". PREFIX . "_competitive_works WHERE id_competitive_work = 13");
     }
     
 	if( isset( $_GET["id"] ) ) $id = $_GET["id"];
